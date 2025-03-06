@@ -1,5 +1,18 @@
 # Multi-Alignment
 
+## 环境配置
+
+###
+可以先创建一个conda 环境，python版本是3.10,然后运行
+```
+pip install -r requirments.txt
+
+```
+或者直接使用environment.yml
+```
+conda env create -f environment.yml
+```
+
 ## baseline
 
 ```
