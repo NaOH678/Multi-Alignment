@@ -14,7 +14,7 @@ class CoarseGrainedDataset(Dataset):
                 lorra_args,
                 ):
         
-        ds = load_from_disk('/data/chaojian/Multi-alignment/dataset/coarse_grained')
+        ds = load_from_disk('../dataset/coarse_grained')
 
         super(CoarseGrainedDataset, self).__init__()
 
@@ -212,7 +212,7 @@ def get_logprobs_accuracy(model, tokenizer, questions, answers, labels, bsz):
 
 
 def load_tqa_sentences(user_tag, assistant_tag):
-    dataset = load_from_disk('/data/chaojian/Multi-alignment/dataset/truthful_qa_multichoice')['validation']
+    dataset = load_from_disk('../dataset/truthful_qa_multichoice')['validation']
     questions, answers = [],[]
     labels = []
     for d in dataset:
@@ -227,7 +227,7 @@ def load_tqa_sentences(user_tag, assistant_tag):
 
 def load_arc_sentences(challenge=False):
     config = 'ARC-Challenge' if challenge else 'ARC-Easy'
-    dataset = load_from_disk('/data/chaojian/Multi-alignment/dataset/ai2_arc_easy')['validation']
+    dataset = load_from_disk('../dataset/ai2_arc_easy')['validation']
 
     questions, answers = [],[]
     labels = []
