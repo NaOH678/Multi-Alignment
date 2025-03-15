@@ -93,7 +93,7 @@ class TruthfulDataset(Dataset):
                 ):
         super(TruthfulDataset, self).__init__()
 
-        ds = load_dataset('tatsu-lab/alpaca', cache_dir='/data/chaojian/.cache/huggingface/datasets/tatsu-lab___alpaca')
+        ds = load_from_disk('/Multi-Alignment/dataset/tatsu_alpaca')
         ds = ds.filter(lambda x: x['input'] == '')['train'].shuffle(seed=42).select(range(10000))
         instructions = ds['instruction']
         outputs = ds['output']
@@ -212,7 +212,7 @@ def get_logprobs_accuracy(model, tokenizer, questions, answers, labels, bsz):
 
 
 def load_tqa_sentences(user_tag, assistant_tag):
-    dataset = load_from_disk('../dataset/truthful_qa_multichoice')['validation']
+    dataset = load_from_disk('/Multi-Alignment/dataset/truthful_qa_multichoice')['validation']
     questions, answers = [],[]
     labels = []
     for d in dataset:
@@ -227,7 +227,7 @@ def load_tqa_sentences(user_tag, assistant_tag):
 
 def load_arc_sentences(challenge=False):
     config = 'ARC-Challenge' if challenge else 'ARC-Easy'
-    dataset = load_from_disk('../dataset/ai2_arc_easy')['validation']
+    dataset = load_from_disk('/Multi-Alignment/dataset/ai2_arc_easy')['validation']
 
     questions, answers = [],[]
     labels = []

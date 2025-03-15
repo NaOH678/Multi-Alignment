@@ -15,6 +15,7 @@ class LorraArguments:
     lorra_beta: float = field(default=0, metadata={"help": "vice versa of pos_type (eg: 'an untruthful')"}) # LoRRA Hyperparameters
     max_res_len: int = field(default=512, metadata={"help": "truncated length for getting generated ouputs from lorra pos/neg exampels"}) # LoRRA Hyperparameters
     grained: str = field(default="coarse", metadata={"help": "coarse, truth, fair, toxic, helpful"})
+    stimulus_type: str = field(default="same_ans", metadata={"help": "same_ans, diff_ans, no_ans"})
 
 @dataclass
 class LoraArguments:
