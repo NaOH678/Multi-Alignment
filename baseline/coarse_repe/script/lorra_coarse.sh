@@ -1,5 +1,5 @@
-deepspeed --num_gpus 4 src/lorra_mistral_coarse.py \
-    --model_name_or_path  "/data/chaojian/Mistral-7B-Instruct-v0.1" \
+deepspeed --num_gpus 1 src/lorra_mistral_coarse.py \
+    --model_name_or_path  "/root/autodl-tmp/Mistral-7B-Instruct-v0.1" \
     --target_layers "10,12,14,16,18,20" \
     --lorra_alpha 5 \
     --lorra_beta 0 \
@@ -23,8 +23,8 @@ deepspeed --num_gpus 4 src/lorra_mistral_coarse.py \
     --logging_steps 10 \
     --tf32 True \
     --q_lora False \
-    --deepspeed configs/ds_zero2_op.json \
-    --gradient_checkpointing true \
+    --deepspeed configs/ds_zero0.json \
+    --gradient_checkpointing false \
     --report_to none \
     --dataloader_drop_last True \
     --remove_unused_columns False \
