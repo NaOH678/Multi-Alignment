@@ -3,8 +3,11 @@ import torch
 import transformers
 from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer
 from peft import LoraConfig, get_peft_model
-from train_val_dataset import CoarseGrainedDataset,TruthfulDataset, load_tqa_sentences, load_arc_sentences, get_logprobs_accuracy
-
+from datasets import load_from_disk
+from train_val_dataset import (
+    CoarseGrainedDataset,TruthfulDataset, SafetyDataset,
+    load_tqa_sentences, load_arc_sentences, get_logprobs_accuracy, safety_eval
+)
 
 
 from args import (
@@ -141,19 +144,31 @@ def train():
     if lorra_args.grained == 'coarse':
         dataset= CoarseGrainedDataset(tokenizer=tokenizer, lorra_args=lorra_args)
         val_set = {}
+
     elif lorra_args.grained == 'truth':
         dataset= TruthfulDataset(tokenizer=tokenizer, lorra_args=lorra_args)
         if training_args.do_eval:
             val_datasets = {
                 "tqa": load_tqa_sentences('[INST]', '[/INST]'),
-                "arc-e": load_arc_sentences(),
+                "arc-e": load_arc_sentences('validation'),
             }
             bsz = training_args.per_device_eval_batch_size
         else:
             val_datasets = {}
-    
 
-  
+    elif lorra_args.grained == 'safety':
+        dataset = SafetyDataset(tokenizer=tokenizer, lorra_args=lorra_args)
+        if training_args.do_eval:
+            bsz = training_args.per_device_eval_batch_size
+            val_datasets = load_from_disk('/data/chaojian/Multi-alignment/dataset/pku-safety')['test']
+            val_datasets = val_datasets.filter(lambda x: x['is_response_0_safe'] != x['is_response_1_safe'])
+                
+        else:
+            val_datasets = {}
+            # val_datasets = prompt['prompt']
+
+    elif lorra_args.grained == 'toxic':
+        pass
         
     class CustomTrainer(Trainer):
 #  tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
@@ -172,6 +187,8 @@ def train():
         
         def evaluate(self, eval_dataset=None, ignore_keys=None, sanity_check=False, **kwargs):
 
+            ######### 这里需要优化，重写了evaluate函数，需要显示地进行数据分片。########
+
             self.model.eval()
             if lorra_args.grained == 'truth':
                 
@@ -185,10 +202,24 @@ def train():
                         acc = get_logprobs_accuracy(self.model, self.tokenizer, questions, answer, labels, bsz)
                         acc_key = 'acc' if val_set == 'tqa' else 'acc_norm'
                         metrics[f"{val_set}_accuracy"] = acc[acc_key]
-                self.model.train()
+                
                 print("===Eval results===")
                 print(metrics)
                 return metrics
+            
+            elif lorra_args.grained == 'safety':
+                safety_scores = safety_eval(dataset=val_datasets, bsz=bsz, model=self.model, tokenizer=self.tokenizer)
+                print("===Eval results===")
+                print("safety_scores:",safety_scores)
+
+                return {"safety_score": safety_scores}
+            
+            elif lorra_args.grained == 'toxic':
+                pass
+
+
+            self.model.train()
+
 
 
     trainer = CustomTrainer(

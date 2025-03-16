@@ -1,6 +1,6 @@
 deepspeed --num_gpus 4 src/lorra_mistral_coarse.py \
     --model_name_or_path  "/data/chaojian/Mistral-7B-Instruct-v0.1" \
-    --grained "truth" \
+    --grained "safety" \
     --target_layers "10,12,14,16,18,20" \
     --lorra_alpha 2 \
     --lorra_beta 0 \
@@ -31,4 +31,4 @@ deepspeed --num_gpus 4 src/lorra_mistral_coarse.py \
     --dataloader_drop_last True \
     --remove_unused_columns False \
     --dataloader_pin_memory False \
-    --max_res_len 128 
+    --max_res_len 128
