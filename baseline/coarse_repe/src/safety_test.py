@@ -27,7 +27,7 @@ def safety_test(prompt:List, batch_size:int, model, tokenizer):
         json.dump(output_list, f)
     
 
-    client = ZhipuAI(api_key="52169a300702491dbf3d20fa6a1f544f.t5pfoT8ThMx7BB3P")
+    client = ZhipuAI(api_key="<your_api_key>")
 
     safety_scores = []
     error_index = []
